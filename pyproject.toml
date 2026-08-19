@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raid-planner"
+version = "0.2.0"
+description = "Планировщик групп DDP и LUN по дискам пула"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+raid-planner = "raid_planner:main"
+
+[tool.setuptools]
+packages = ["ddp"]
+py-modules = ["raid_planner"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

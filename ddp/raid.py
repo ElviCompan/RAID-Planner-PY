@@ -4,6 +4,16 @@ from __future__ import annotations
 
 RAID_TYPES = ("0", "1", "5", "6", "10")
 
+# Типичный у нас RAID-6 8+2: группа и LUN сразу на 10 дисков.
+DEFAULT_GROUP_DISKS = 10
+DEFAULT_LUN_RAID = "6"
+DEFAULT_LUN_WIDTH = 10
+
+
+def preferred_group_disks(remaining: int, preferred: int = DEFAULT_GROUP_DISKS) -> int:
+    """Сколько дисков дать новой группе: не больше остатка, вручную потом можно набрать больше."""
+    return min(preferred, max(0, remaining))
+
 
 def min_width(raid_type: str) -> int:
     rt = str(raid_type).strip().lower()
@@ -29,7 +39,7 @@ def suggest_width(raid_type: str) -> int:
     if rt == "5":
         return 4
     if rt == "6":
-        return 6
+        return DEFAULT_LUN_WIDTH
     if rt == "10":
         return 4
     return 2

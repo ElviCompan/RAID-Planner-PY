@@ -14,6 +14,9 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from ddp import (
+    DEFAULT_GROUP_DISKS,
+    DEFAULT_LUN_RAID,
+    DEFAULT_LUN_WIDTH,
     GB,
     LUN_PALETTE,
     LunSpec,
@@ -30,6 +33,7 @@ from ddp import (
     normalize_width,
     parity_disks,
     parse_gb_text,
+    preferred_group_disks,
     remaining_max_usable,
     suggest_width,
     tb_to_bytes,
@@ -157,7 +161,7 @@ class LunRow:
 
         ttk.Label(self.frame, text="RAID:").grid(row=0, column=col, sticky="w")
         col += 1
-        self.raid_var = tk.StringVar(value="0")
+        self.raid_var = tk.StringVar(value=DEFAULT_LUN_RAID)
         self.raid_combo = ttk.Combobox(
             self.frame,
             textvariable=self.raid_var,
@@ -171,7 +175,7 @@ class LunRow:
 
         ttk.Label(self.frame, text="дисков:").grid(row=0, column=col, sticky="w")
         col += 1
-        self.width_var = tk.StringVar(value="2")
+        self.width_var = tk.StringVar(value=str(DEFAULT_LUN_WIDTH))
         self.width_spin = ttk.Spinbox(
             self.frame,
             from_=2,
@@ -435,7 +439,13 @@ class LunRow:
 class DdpTab(ttk.Frame):
     """Вкладка группы DDP: число дисков, список LUN, карта дисков."""
 
-    def __init__(self, master: ttk.Notebook, app: "RaidPlannerApp", title: str) -> None:
+    def __init__(
+        self,
+        master: ttk.Notebook,
+        app: "RaidPlannerApp",
+        title: str,
+        disk_count: int | None = None,
+    ) -> None:
         super().__init__(master, padding=8)
         self.app = app
         self.title = title
@@ -445,7 +455,8 @@ class DdpTab(ttk.Frame):
         self._last_usable = 0
         self._last_parity = 0
         self._drawing = False
-        self.disk_count_var = tk.StringVar(value="5")
+        n = DEFAULT_GROUP_DISKS if disk_count is None else max(0, int(disk_count))
+        self.disk_count_var = tk.StringVar(value=str(n))
         self.disk_count_var.trace_add("write", lambda *_: self.app.refresh())
 
         header = ttk.Frame(self)
@@ -977,7 +988,10 @@ class RaidPlannerApp(ttk.Frame):
 
     def add_group(self) -> None:
         title = f"DDP{len(self.tabs) + 1}"
-        tab = DdpTab(self.notebook, self, title)
+        used = sum(t.disk_count() for t in self.tabs)
+        remaining = self.pool_disk_count() - used
+        initial = preferred_group_disks(remaining)
+        tab = DdpTab(self.notebook, self, title, disk_count=initial)
         self.tabs.append(tab)
         self.notebook.add(tab, text=title)
         self.notebook.select(tab)

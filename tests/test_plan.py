@@ -29,6 +29,7 @@ def test_roundtrip() -> None:
 def test_empty_groups_gets_one() -> None:
     plan = parse_plan({"pool": {"disk_count": 8, "disk_tb": 2}, "groups": []})
     assert len(plan["groups"]) == 1
+    assert plan["groups"][0]["disk_count"] == 10
     assert plan["groups"][0]["luns"] == []
 
 

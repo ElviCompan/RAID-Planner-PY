@@ -18,6 +18,10 @@ from ddp.raid import (
     parity_kind,
     suggest_width,
     usable_from_extent,
+    DEFAULT_GROUP_DISKS,
+    DEFAULT_LUN_RAID,
+    DEFAULT_LUN_WIDTH,
+    preferred_group_disks,
 )
 from ddp.units import (
     GB,
@@ -32,6 +36,9 @@ from ddp.units import (
 )
 
 __all__ = [
+    "DEFAULT_GROUP_DISKS",
+    "DEFAULT_LUN_RAID",
+    "DEFAULT_LUN_WIDTH",
     "GB",
     "LUN_PALETTE",
     "LunSpec",
@@ -52,6 +59,7 @@ __all__ = [
     "parity_kind",
     "parse_gb_text",
     "place_luns",
+    "preferred_group_disks",
     "remaining_max_usable",
     "suggest_width",
     "tb_to_bytes",

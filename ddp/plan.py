@@ -7,7 +7,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from ddp.raid import RAID_TYPES, normalize_width
+from ddp.raid import DEFAULT_GROUP_DISKS, RAID_TYPES, normalize_width
 
 PLAN_VERSION = 1
 APP_DIR_NAME = "RAID-Planner"
@@ -28,7 +28,7 @@ def default_plan() -> dict[str, Any]:
     return {
         "version": PLAN_VERSION,
         "pool": {"disk_count": 20, "disk_tb": 14.0},
-        "groups": [{"disk_count": 5, "luns": []}],
+        "groups": [{"disk_count": DEFAULT_GROUP_DISKS, "luns": []}],
     }
 
 
@@ -74,7 +74,7 @@ def parse_plan(raw: Any) -> dict[str, Any]:
         groups.append({"disk_count": n, "luns": luns})
 
     if not groups:
-        groups = [{"disk_count": 5, "luns": []}]
+        groups = [{"disk_count": DEFAULT_GROUP_DISKS, "luns": []}]
 
     return {
         "version": PLAN_VERSION,
